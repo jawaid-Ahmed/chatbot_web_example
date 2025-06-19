@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Modern Chatbot UI</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="chat-container">
+    <header class="chat-header">
+      <h2>AI ChatBot</h2>
+    </header>
+    <div class="chat-window" id="chat-window">
+      <div class="message bot">👋 Hello! How can I assist you today?</div>
+      <!-- Messages will appear here -->
+    </div>
+    <form class="chat-input-area" onsubmit="sendMessage(event)">
+      <input type="text" id="user-input" placeholder="Type your message..." required />
+      <button type="submit">➤</button>
+    </form>
+  </div>
+
+  <script>
+async function sendMessage(e) {
+  e.preventDefault();
+  const input = document.getElementById('user-input');
+  const message = input.value.trim();
+  if (!message) return;
+
+  const chatWindow = document.getElementById('chat-window');
+  const userMessage = document.createElement('div');
+  userMessage.className = 'message user';
+  userMessage.textContent = message;
+  chatWindow.appendChild(userMessage);
+
+  const botReply = document.createElement('div');
+  botReply.className = 'message bot';
+  botReply.textContent = "🤖 Thinking...";
+  chatWindow.appendChild(botReply);
+
+  input.value = '';
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+
+  // Send message to backend
+  try {
+    const res = await fetch("http://127.0.0.1:5000/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message })
+    });
+    const data = await res.json();
+    botReply.textContent = "🤖 " + data.reply;
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  } catch (err) {
+    botReply.textContent = "⚠️ Error talking to server!";
+  }
+}
+</script>
+
+</body>
+</html>
+
+
+<!-- commond to run html server -->
+ <!-- python3 -m http.server 8000 -->
+
+ <!-- commond to run python backend server server -->
+ <!-- python3 chatbot_backend.py -->
+
+ <!-- Chat bot hosted on locallhost -->
+  <!-- http://localhost:8000/ -->
